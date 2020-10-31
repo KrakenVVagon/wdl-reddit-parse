@@ -97,6 +97,13 @@ class subreddit:
                 topics_dict['type'].append('Other')
                 
         new_data = pd.DataFrame(topics_dict)
+        # fix the date column
+        import datetime as dt
+        def get_date(created):
+            return dt.datetime.fromtimestamp(created)
+    
+        _timestamp = new_data['created'].apply(get_date)
+        new_data = new_data.assign(timestamp=_timestamp)
             
         try:
             old_data = pd.read_csv(path_to_file)
