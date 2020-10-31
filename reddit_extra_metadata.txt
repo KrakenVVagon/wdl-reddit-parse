@@ -1,0 +1,5 @@
+psu,n8w5VgJsOwmhSA
+key,5Anxcm6iD0qrucIH5WemrVC-g4ZsvQ
+agent,Andrew Younger
+user,poe_kraken
+pass,02hero
