@@ -23,8 +23,6 @@ import praw
 import pandas as pd
 
 class subreddit:
-    import praw
-    import pandas as pd
     
     def __init__(self,subreddit,reddit=None):
         self.reddit = reddit
@@ -99,12 +97,15 @@ class subreddit:
         new_data = pd.DataFrame(topics_dict)
         # fix the date column
         import datetime as dt
+        
         def get_date(created):
             return dt.datetime.fromtimestamp(created)
     
         _timestamp = new_data['created'].apply(get_date)
         new_data = new_data.assign(timestamp=_timestamp)
-            
+        
+        # try to read the existing file
+        # if no file exists then create the file
         try:
             old_data = pd.read_csv(path_to_file)
         except:
@@ -112,10 +113,13 @@ class subreddit:
             old_data = None
             print('File saved')
         
+        # if there is an existing file update instead of replacing the data
+        # take only the unique submission ids to avoid doubling any replies
         if old_data is not None:
             combined = pd.concat([new_data,old_data]).drop_duplicates(subset=['id'])
             combined.to_csv(path_to_file,index=False,mode='w')
             print('File updated')
         else:
             new_data.to_csv(path_to_file,index=False,mode='w')
-    
+
+# going to add another class here where we can take a look at the comments of a reddit post
