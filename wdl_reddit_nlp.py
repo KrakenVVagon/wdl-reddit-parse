@@ -129,12 +129,47 @@ scatter_plot(x=xplot,
              save=True
              )
 
-# get the most often used things for both positive and negative titles
+# get the most often used words for both positive and negative titles
+from nltk.tokenize import TweetTokenizer, RegexpTokenizer
+from nltk.corpus import stopwords
+from nltk import FreqDist
 
+stop_words = stopwords.words('english')
 
+#add some corpus specific stopwords for the game that will appear all the time
+stop_words += ['watch','dogs','game','legion','like','bad','get','else','wd','play','playing']
 
+#tokenizer= TweetTokenizer()
+tokenizer = RegexpTokenizer(r'\w+')
 
+def text_process(text):
+    tokens = []
+    
+    for t in text:
+        toks = tokenizer.tokenize(t)
+        toks = [s.lower() for s in toks if s.lower() not in stop_words]
+        
+        tokens.extend(toks)
+        
+    return tokens
 
+pos_tokens = text_process(vader_df['title'][vader_df['compound']>0])
+neg_tokens = text_process(vader_df['title'][vader_df['compound']<0])
+
+# get 10 most common words for both positive and negative titles
+pos_freq = FreqDist(pos_tokens).most_common(15)
+neg_freq = FreqDist(neg_tokens).most_common(15)
+
+# save the positive and negative common words to a file
+# just because why not - they can be kept in a 2 column file no problem
+pos_words = [w for w,c in pos_freq]
+neg_words = [w for w,c in neg_freq]
+
+word_df = pd.DataFrame({'Positive':pos_words,'Negative':neg_words})
+
+word_df.to_csv('pos_neg_words_title.txt',index=False,sep=',')
+print('Top positive and negative title words saved')
+    
 
 
 
