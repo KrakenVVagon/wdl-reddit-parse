@@ -211,11 +211,11 @@ pos_df = df_sns.loc[df_sns.title_type=='Positive']
 neg_df = df_sns.loc[df_sns.title_type=='Negative']
 
 plt.figure(figsize=(12,9))
-sns.kdeplot(pos_df['title_vader_score'],pos_df['score'],
+ax1 = sns.kdeplot(pos_df['title_vader_score'],pos_df['score'],
             cmap='Blues',shade=True,shade_lowest=False,n_levels=5
             )
 
-sns.kdeplot(neg_df['title_vader_score'],neg_df['score'],
+ax2 = sns.kdeplot(neg_df['title_vader_score'],neg_df['score'],
             cmap='Reds',shade=True,shade_lowest=False,n_levels=5
             )
 
@@ -229,7 +229,7 @@ from nltk import FreqDist
 stop_words = stopwords.words('english')
 
 #add some corpus specific stopwords for the game that will appear all the time
-stop_words += ['watch','dogs','game','legion','like','bad','get','else','wd','play','playing']
+stop_words += ['watch','dogs','game','legion','like','bad','get','else','wd','play','playing','watchdogs']
 
 #tokenizer= TweetTokenizer()
 tokenizer = RegexpTokenizer(r'\w+')
@@ -267,12 +267,26 @@ print('Top positive and negative title words saved')
 ################
 
 # take only the posts that are text-based. these should all have content inside their body
+text_posts = df[df.type=='Text']
 
+# find the average length in characters of one of these text posts
+lens = []
+for b in text_posts['body']:
+    try:
+        lens.append(len(b))
+    except:
+        lens.append(0)
+        
+lens = np.array(lens)
+nonzero_lens = lens[np.nonzero(lens)]
+        
+print('Average legnth of text posts is: {}'.format(np.mean(lens)))
+print('Average length of text posts without 0 length: {}'.format(np.mean(nonzero_lens)))
 
+# good length - on average just under 80 words probably.
+# from here we simply do topic analysis using LDA and NMF
 
-
-
-
+# going to write a general script to do LDA and NMF so we can compare the results here and then decide
 
 
 
