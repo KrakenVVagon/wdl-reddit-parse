@@ -440,10 +440,47 @@ else:
 
 ## repeat this process for negative comments
 
+neg_df = text_posts.loc[text_posts.body_type=='Negative']
 
+# update stop words with new findings
+stop_words += ['thing','something','feel','think','edit','say',
+               'ubisoft','games','see','far'
+               ]
 
+neg_corpus = corpus(neg_df['cleanBody'],stopwords=stop_words)
 
+# topic0 talks about gameplay - characters, driving and repetition and permadeath
+# topic1 talks about maps and UI
+# topic2 talks about performance issues (PC) and crashes/progress
+# topic3 talks about recruitment and operatives, deep profiler, repetition
 
+if updated:
+    print('FILE UPDATED - REVIEW TOPICS')
+    neg_corpus.display_topics('NMF',4,10)
+else:
+    nmf_vals = neg_corpus.nmf_topics(4)
+    nmf_df = pd.DataFrame(nmf_vals,columns=['topic0','topic1','topic2','topic3'])
+    #nmf_df['post_number']=nmf_df.index
+   # nmf_df = nmf_df.replace(0,np.nan,inplace=True)
+    
+    #melt_df = nmf_df.melt(var_name='groups',value_name='vals')
+    
+    #sns.violinplot(data=nmf_df,scale='count',inner=None)
+    fig, axes = plt.subplots(2,2,figsize=(12,9),sharey=True)
+    axes[0,0].set_title('Topic0 NMF Scores',fontsize=16)
+    axes[0,1].set_title('Topic1 NMF Scores',fontsize=16)
+    axes[1,0].set_title('Topic2 NMF Scores',fontsize=16)
+    axes[1,1].set_title('Topic3 NMF Scores',fontsize=16)
+    
+    sns.violinplot(y=nmf_df['topic0'][nmf_df.topic0 > 0],ax=axes[0,0],inner=None,color='blue')
+    sns.violinplot(y=nmf_df['topic1'][nmf_df.topic1 > 0],ax=axes[0,1],inner=None,color='red')
+    sns.violinplot(y=nmf_df['topic2'][nmf_df.topic2 > 0],ax=axes[1,0],inner=None,color='green')
+    sns.violinplot(y=nmf_df['topic3'][nmf_df.topic3 > 0],ax=axes[1,1],inner=None,color='orange')
+    
+    for ax in axes.flat:
+        ax.set(ylabel='Score')
+    plt.savefig('negative_body_NMF_scores.png')
+    plt.clf()
 
 
 
