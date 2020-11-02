@@ -122,4 +122,11 @@ class subreddit:
         else:
             new_data.to_csv(path_to_file,index=False,mode='w')
 
-# going to add another class here where we can take a look at the comments of a reddit post
+# reddit post class which will be used for looking at the comments of a reddit post
+# and also saving these comments to a file
+# at first should just do the parent-level comments
+class reddit_post:
+    
+    def __init__():
+        
+        return True
